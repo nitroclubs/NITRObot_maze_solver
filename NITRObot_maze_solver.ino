@@ -47,8 +47,8 @@ const int SideServoAngle = FrontServoAngle + WallFollowingSide; //(0 or 180 degr
 const int FrontServoDelay = 150;
 const int SideServoDelay = 150;
 
-const int LeftSpeed = 90;
-const int RightSpeed = 90;
+const int LeftSpeed = 100; //да се подбере оптималната скорост на левия двигател
+const int RightSpeed = 100; //да се подбере оптималната скорост на десния двигател
 
 float maxDistance = 130.0;
 int speedLeft = LeftSpeed;
@@ -94,12 +94,12 @@ void loop()
   sideDistance = getDistance(SideServoAngle, SideServoDelay);
   frontDistance = getDistance(FrontServoAngle, FrontServoDelay);
 
-  if (frontDistance <= 15.0) //Стената отпред е близко
+  if (frontDistance <= 20.0) //Стената отпред е близко
   {
     digitalWrite(LedPin, HIGH);
     currentState = 1;
   }
-  if (frontDistance >= 25.0) //Стената отпред е далече
+  if (frontDistance >= 20.0) //Стената отпред е далече
   {
     if (sideDistance >= 50.0) //Стената отдясно е далече
     {
@@ -133,51 +133,46 @@ void loop()
     delay(100);
     speedLeft = LeftSpeed * 1.35;
     turnLeft();
-    delay(750);
+    delay(700);  //завой на ляво на 90 градуза (задава се продължителността на завоя)
+     speedLeft = LeftSpeed;
+     speedRight = RightSpeed;
     moveBackward();
     delay(100);
     break;
   case 2: // Turn 90 degrees right
-    for (size_t i = 0; i < 8; i++)
-    {
       speedLeft = LeftSpeed;
-      speedRight = RightSpeed;
-      moveForward();
-      delay(20);
-      speedLeft = LeftSpeed * 1.4;
-      speedRight = 0;
-      moveForward();
-      delay(170);
-    }
-    for (size_t i = 0; i < 7; i++)
-    {
-      speedLeft = LeftSpeed;
-      speedRight = RightSpeed;
-      moveForward();
-      delay(35);
-      stopMoving();
-      delay(20);
-    }
-    moveBackward();
-    delay(100);
+     speedRight = RightSpeed;
+     moveForward();
+     delay(600);    // придвижване 20 см напред (задава се продължителността на придвижването)
+     speedRight = RightSpeed * 1.35;
+     turnRight();
+     delay(700);  //завой на дясно на 90 градуза (задава се продължителността на завоя)
+     speedLeft = LeftSpeed;
+     speedRight = RightSpeed;
+     moveForward();
+     delay(750);   // придвижване 25 см напред (задава се продължителността на придвижването)
     break;
-  case 3: // Turn slight right
+     case 3: // Turn slight right
     speedRight = RightSpeed * 2.55;
+    speedLeft = LeftSpeed * 2.55;
     turnRight();
     delay(50);
     break;
   case 4: // Turn slight left
     speedLeft = LeftSpeed * 2.55;
+    speedRight = RightSpeed * 2.55;
     turnLeft();
     delay(50);
     break;
   case 5: // Turn  more agressive to the left
     speedLeft = LeftSpeed * 2.55;
+    speedRight = RightSpeed * 2.55;
     turnLeft();
     delay(100);
     break;
   case 6: // Turn  more agressive to the right
     speedRight = RightSpeed * 2.55;
+    speedLeft = LeftSpeed * 2.55;
     turnRight();
     delay(100);
     break;
@@ -187,6 +182,9 @@ void loop()
   default:
     break;
   }
+  speedRight = RightSpeed ;
+  speedLeft = LeftSpeed;
+  moveForward();
 }
 
 //==================================== FUNCTIONS =====================================================
@@ -235,21 +233,7 @@ float getDistance(int servoAngle, int delayAfterServoMovement)
 {
   float distance;
   myservo.write(servoAngle);
-  //---------------------------150 millis
-  speedLeft = LeftSpeed;
-  speedRight = RightSpeed;
-  moveForward();
-  delay(35);
-  stopMoving();
-  delay(20);
-  moveForward();
-  delay(35);
-  stopMoving();
-  delay(20);
-  moveForward();
-  delay(40);
-  stopMoving();
-  //-----------------------
+  delay(150);
   pinMode(UltrasonicPin, OUTPUT);
   digitalWrite(UltrasonicPin, LOW);
   delayMicroseconds(2);
